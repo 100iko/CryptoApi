@@ -1,0 +1,10 @@
+# Usage: pip3 install -r requirements.txt
+
+Flask==1.1.2
+Flask-RESTful==0.3.8
+Flask-SQLAlchemy==2.4.3
+#flask-crontab==0.1.2
+
+requests~=2.25.1
+APScheduler~=3.7.0
+
