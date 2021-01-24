@@ -33,7 +33,7 @@ def scrap_kraken():
 def setup_cron():
     cron = BackgroundScheduler()
 
-    cron.add_job(func=scrap_kraken, trigger=CronTrigger(minute="*"))
+    cron.add_job(func=scrap_kraken, trigger=CronTrigger(hour="*/3"))
     cron.start()
 
     atexit.register(lambda: cron.shutdown())
