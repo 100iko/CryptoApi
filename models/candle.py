@@ -2,7 +2,7 @@ from db import db
 
 
 class CandleModel(db.Model):
-    __tablename__ = 'candle'
+    __abstract__ = True
 
     time = db.Column(db.Integer, primary_key=True)
     open = db.Column(db.Float)
@@ -39,3 +39,27 @@ class CandleModel(db.Model):
     @classmethod
     def find_by_time(cls, time: int):
         return cls.query.filter_by(time=time).first()
+
+
+class BtcUsd(CandleModel):
+    pass
+
+
+class EthUsd(CandleModel):
+    pass
+
+
+class LtcUsd(CandleModel):
+    pass
+
+
+class EthBtc(CandleModel):
+    pass
+
+
+class LtcBtc(CandleModel):
+    pass
+
+
+class LtcEth(CandleModel):
+    pass

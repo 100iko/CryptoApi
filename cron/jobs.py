@@ -1,7 +1,7 @@
 from datetime import datetime
 import requests
 
-from models import CandleModel
+from models import candle_pairs
 
 
 def scrap_kraken(pair: str, interval: int = 1):
@@ -18,8 +18,10 @@ def scrap_kraken(pair: str, interval: int = 1):
 
     if data[-1][0] > last: data.pop(-1)
 
-    candles = [CandleModel(*i) for i in data]
+    candle_type = candle_pairs[pair]
 
-    for candle in candles:
-        if not CandleModel.find_by_time(candle.time):
-            candle.save_to_db()
+    candles = [candle_type(*i) for i in data]
+
+    for candle_type in candles:
+        if not candle_type.find_by_time(candle_type.time):
+            candle_type.save_to_db()
