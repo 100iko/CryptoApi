@@ -13,10 +13,14 @@ candle_pairs = {
     'XETHZUSD': EthUsd,
 
     'LTCUSD': LtcUsd,
-    'XLTCZUSD': EthBtc,
+    'XLTCZUSD': LtcUsd,
+
+    'XETHXXBT': EthBtc,
+    'ETHBTC': EthBtc,
 
     'LTCBTC': LtcBtc,
     'XLTCXXBT': LtcBtc,
 
     'LTCETH': LtcEth
+
 }
