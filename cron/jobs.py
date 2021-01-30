@@ -24,6 +24,7 @@ def scrap_kraken(pair: str, interval: int = 1):
 
     for candle in candles:
         if candle_type.find_by_time(candle.time):
-            candle.update_to_db()
+            if len({candle.open, candle.high, candle.close, candle.low}) > 1:
+                candle.update_to_db()
         else:
             candle.save_to_db()
