@@ -4,7 +4,7 @@ import plotly
 import plotly.graph_objects as go
 
 from models import candle_pairs
-import datetime
+from datetime import datetime
 
 routes = Blueprint('routes', __name__)
 
@@ -19,7 +19,7 @@ def graph(pair: str):
     data: list = candle_pairs[pair.upper()].query.all()
 
     candle_data = [go.Candlestick(
-        x=[datetime.datetime.utcfromtimestamp(x.time) for x in data],
+        x=[datetime.fromtimestamp(x.time) for x in data],
         open=[x.open for x in data],
         high=[x.high for x in data],
         low=[x.low for x in data],
@@ -29,7 +29,7 @@ def graph(pair: str):
     )]
 
     volume_data = [go.Bar(
-        x=[datetime.datetime.utcfromtimestamp(x.time) for x in data],
+        x=[datetime.fromtimestamp(x.time) for x in data],
         y=[x.volume for x in data])
     ]
 
