@@ -1,7 +1,6 @@
 from flask_restful import Api
-from .candle import CandleList, CandlesCount
+from .candle import CandleList
 
 api = Api()
 
 api.add_resource(CandleList, '/candles/<string:pair>')
-api.add_resource(CandlesCount, '/candles/<string:pair>/count')

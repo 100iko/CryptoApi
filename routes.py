@@ -1,17 +1,33 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, abort
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import os
+from datetime import datetime, timedelta
 
 from models import candle_pairs
-from datetime import datetime, timedelta
 
 routes = Blueprint('routes', __name__)
 
 
 @routes.route('/')
 def index():
-    return 'Hi'
+    abort(404)
+
+
+@routes.route('/doc')
+def documentation():
+    return {
+               'paths': {
+                   '/graph/<pair>': {'params': {
+                       'interval': 'optional, default=1, wip',
+                   }},
+                   '/candles/<pair>': {'params': {
+                       'interval': 'optional, default=1, wip',
+                       'limit': 'optional, default=10',
+                       'offset': 'optional, default=0'
+                   }}
+               },
+               'pairs': [str(x) for x in candle_pairs.keys()],
+           }, 200
 
 
 @routes.route('/graph/<string:pair>')
@@ -37,12 +53,22 @@ def graph(pair: str):
         x=time_periods,
         y=[x.volume for x in data],
         name='Volume',
-        meta=dict(colorbar="#FFFFFF")
+    )
+
+    vwap_data = go.Scatter(
+        x=time_periods,
+        y=[x.vwap for x in data],
+        name='Vwap',
+        fillcolor='orange',
+        mode='markers',
+        showlegend=False,
+        marker=dict(color='orange', size=2)
     )
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(volume_data, secondary_y=False)
     fig.add_trace(candle_data, secondary_y=True)
+    fig.add_trace(vwap_data, secondary_y=True)
 
     fig.layout.update(dict(
         title=pair.upper(),
@@ -77,9 +103,6 @@ def graph(pair: str):
         ),
     ))
 
-    if os.path.exists('templates/fig_graph.html'):
-        os.remove('templates/fig_graph.html')
-
-    fig.write_html('templates/fig_graph.html')
+    fig.write_html('templates/fig_graph.html', include_plotlyjs='cdn')
 
     return render_template('fig_graph.html')
