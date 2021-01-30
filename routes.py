@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import os
 
 from models import candle_pairs
 from datetime import datetime, timedelta
@@ -16,7 +17,7 @@ def index():
 @routes.route('/graph/<string:pair>')
 def graph(pair: str):
     candle_type = candle_pairs[pair.upper()]
-    data: list = candle_type.query.order_by(candle_type.time.desc()).limit(100).all()
+    data: list = candle_type.query.order_by(candle_type.time.desc()).limit(12 * 60).all()
 
     time_periods = [datetime.fromtimestamp(x.time) for x in data]
 
@@ -76,6 +77,9 @@ def graph(pair: str):
         ),
     ))
 
-    fig.write_html("templates/fig_graph.html")
+    if os.path.exists('templates/fig_graph.html'):
+        os.remove('templates/fig_graph.html')
+
+    fig.write_html('templates/fig_graph.html')
 
     return render_template('fig_graph.html')
