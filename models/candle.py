@@ -32,8 +32,8 @@ class CandleModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def delete_from_db(self):
-        db.session.delete(self)
+    def update_to_db(self):
+        db.session.merge(self)
         db.session.commit()
 
     @classmethod
