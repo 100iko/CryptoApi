@@ -163,6 +163,9 @@ def generate_intervals(pair_type, interval: int):
     candle_type = unique_pairs[pair_type.upper()]
     candles = candle_type.query.order_by(candle_type.time.asc()).all()
 
+    if interval == 1:
+        return candles[::-1]
+
     while (candles[0].time / 60) % interval != 0:
         candles.pop(0)
 
