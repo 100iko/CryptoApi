@@ -40,7 +40,7 @@ def init_dash(server):
                         className="m-2",
                         children=[dbc.Select(
                             id='interval',
-                            value=30,
+                            value=15,
                             options=[
                                 {"label": '1m', "value": 1},
                                 {"label": '3m', "value": 3},
