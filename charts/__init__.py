@@ -135,6 +135,7 @@ def init_dash_callbacks(app):
                 spikemode='across',
                 spikesnap='cursor',
                 spikethickness=1,
+                fixedrange=True,
                 showgrid=False,
                 range=[0, ymax],
             ),
