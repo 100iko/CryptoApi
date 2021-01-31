@@ -9,7 +9,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from models import candle_pairs
+from models import unique_pairs
 
 
 def init_dash(server):
@@ -22,46 +22,52 @@ def init_dash(server):
             '../static/css/dash_style.css',
         ]
     )
+    dash_app.title = 'Charts'
 
     dash_app.layout = html.Div(
-        style={"height": "100vh", 'backgroundColor': 'rgb(18, 23, 33)'},
         children=[
-            html.Div([
-                html.Label('Pair'), dcc.Dropdown(
-                    id='pair',
-                    options=[{'label': str(x).upper(), 'value': str(x).upper()} for x in candle_pairs.keys()],
-                    value='BTCUSD'
-                )], style={'width': '45%', 'display': 'inline-block'}
-            ),
+            html.Div(
+                children=[
+                    html.Div(
+                        className="m-2",
+                        children=[dbc.Select(
+                            id='pair',
+                            value='BTCUSD',
+                            options=[{"label": str(x).upper(), "value": str(x).upper()} for x in unique_pairs],
+                        )]),
 
-            html.Div([
-                html.Label('Interval'), dcc.Dropdown(
-                    id='interval',
-                    options=[
-                        {'label': '1 Minute', 'value': '1m'},
-                        {'label': '3 Minutes', 'value': '3m'},
-                        {'label': '5 Minute', 'value': '5m'},
-                    ],
-                    value='1m'
-                )], style={'width': '45%', 'display': 'none'}
-            ),
+                    html.Div(
+                        className="m-2",
+                        children=[dbc.Select(
+                            id='interval',
+                            value='1m',
+                            options=[
+                                {"label": '1m', "value": '1m'},
+                                {"label": '3m', "value": '3m'},
+                                {"label": '5m', "value": '5m'},
+                            ]
+                        )]
+                    )], style={"display": "flex", "flexWrap": "wrap"}),
+
             dcc.Graph(id='chart')
-        ])
+        ], style={"height": "100vh"})
 
     init_dash_callbacks(dash_app)
 
 
 def init_dash_callbacks(app):
     @app.callback(
-        Output(component_id='chart', component_property='figure'),
-        Input(component_id='pair', component_property='value'),
-        Input(component_id='interval', component_property='value'),
+        Output('chart', 'figure'),
+        [
+            Input('pair', 'value'),
+            Input('interval', 'value')
+        ]
     )
     def update_graph(pair, interval):
         if pair is None: return
         if interval is None: return
 
-        candle_type = candle_pairs[pair.upper()]
+        candle_type = unique_pairs[pair.upper()]
         data = candle_type.query.order_by(candle_type.time.desc()).limit(24 * 60).all()
 
         time_periods = [datetime.fromtimestamp(x.time) for x in data]
@@ -78,9 +84,10 @@ def init_dash_callbacks(app):
             showlegend=False,
         )
 
+        volumes = [x.volume for x in data]
         volume_data = go.Bar(
             x=time_periods,
-            y=[x.volume for x in data],
+            y=volumes,
             name='Volume',
         )
 
@@ -99,13 +106,11 @@ def init_dash_callbacks(app):
         fig.add_trace(candle_data, secondary_y=True)
         fig.add_trace(vwap_data, secondary_y=True)
 
-        update_layout(fig)
-
-        fig.update_xaxes(dict(range=[datetime.now() - timedelta(hours=4), datetime.now()]))
+        update_layout(fig, datetime.now() - timedelta(hours=4), datetime.now(), max(volumes) * 3)
 
         return fig
 
-    def update_layout(fig):
+    def update_layout(fig, xmin, xmax, ymax):
         fig.layout.update(dict(
             margin=dict(l=8, r=8, t=24, b=12),
             dragmode='pan',
@@ -122,6 +127,7 @@ def init_dash_callbacks(app):
                 spikesnap='hovered data',
                 spikethickness=1,
                 rangeslider=dict(visible=False),
+                range=[xmin, xmax]
             ),
             yaxis=dict(
                 showspikes=True,
@@ -130,7 +136,7 @@ def init_dash_callbacks(app):
                 spikesnap='cursor',
                 spikethickness=1,
                 showgrid=False,
-                range=[0, 300],
+                range=[0, ymax],
             ),
             yaxis2=dict(
                 gridcolor='rgb(36, 41, 55)',

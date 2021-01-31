@@ -23,3 +23,12 @@ candle_pairs = {
 
     'LTCETH': LtcEth
 }
+
+unique_pairs = {
+    'BTCUSD': BtcUsd,
+    'ETHUSD': EthUsd,
+    'LTCUSD': LtcUsd,
+    'ETHBTC': EthBtc,
+    'LTCBTC': LtcBtc,
+    'LTCETH': LtcEth
+}
