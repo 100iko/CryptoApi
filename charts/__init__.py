@@ -161,7 +161,7 @@ def init_dash_callbacks(app):
 
 def generate_intervals(pair_type, interval: int):
     candle_type = unique_pairs[pair_type.upper()]
-    candles = candle_type.query.order_by(candle_type.time.asc()).limit(60 * 24 * 3 * interval).all()
+    candles = candle_type.query.order_by(candle_type.time.asc()).limit(60 * 24 * 2 * interval).all()
 
     if interval == 1:
         return candles[::-1]
