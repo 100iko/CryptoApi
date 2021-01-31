@@ -2,6 +2,7 @@ from flask import Flask
 from db import db
 from api import api
 from cron import cron
+from charts import init_dash
 
 
 def create_app():
@@ -15,6 +16,8 @@ def create_app():
     with app.app_context():
         from routes import routes
         app.register_blueprint(routes)
+
+        init_dash(app)
 
         db.create_all()
 
