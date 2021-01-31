@@ -93,7 +93,7 @@ def init_dash_callbacks(app):
 
         vwap_data = go.Scatter(
             x=time_periods,
-            y=list(map(lambda x: x.vwap if x.vwap > 0 else (x.close + x.low) / 2, data)),
+            y=list(map(lambda x: x.vwap if x.vwap > 0 else (x.open + x.close) / 2, data)),
             name='Vwap',
             fillcolor='orange',
             mode='markers',
@@ -106,7 +106,7 @@ def init_dash_callbacks(app):
         fig.add_trace(candle_data, secondary_y=True)
         fig.add_trace(vwap_data, secondary_y=True)
 
-        update_layout(fig, datetime.now() - timedelta(hours=4), datetime.now(), max(volumes) * 3)
+        update_layout(fig, time_periods[120], time_periods[0] + timedelta(minutes=5), max(volumes) * 3)
 
         return fig
 
