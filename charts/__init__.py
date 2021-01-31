@@ -58,8 +58,6 @@ def init_dash_callbacks(app):
         Input(component_id='interval', component_property='value'),
     )
     def update_graph(pair, interval):
-        print(f"{pair}\t{interval}")
-
         if pair is None: return
         if interval is None: return
 
